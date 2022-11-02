@@ -1,0 +1,29 @@
+{
+    "name": "SuperCoolLibrary",
+    "version": "1.0.0",
+    "description": "SuperCoolLibrary ",
+    "keywords": "planet, happiness, people",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/laboratory107/LabSession-PUS-Demos"
+    },
+    "authors":
+    [
+      {
+        "name": "Boris Tomas",
+        "email": "btomas@foi.hr",
+        "url": "www.foi.hr"
+      },
+      {
+        "name": "Lovro Posaric",
+        "email": "lposaric@foi.hr",
+        "url": "www.foi.hr",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "homepage": "https://www.foi.hr/",
+    "frameworks": "*",
+    "platforms": "*"
+  }
