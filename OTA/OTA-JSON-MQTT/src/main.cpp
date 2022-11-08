@@ -21,29 +21,9 @@ const char *mqttTopic = "esp32/update";
 const char *clientName = "randomEsp";
 const int mqttPort = 1883;
 
-PubSubClient mqttClient;
-
-void setup()
-{
-    Serial.begin(115200);
-
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(labSSID, labPass);
-    Serial.println("Connecting");
-
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        Serial.print(".");
-        delay(500);
-
-        timeoutCounter++;
-        if (timeoutCounter >= 20)
-            ESP.restart();
-    }
-
-    mqttClient.setServer(mqttBroker, mqttPort);
-    mqttClient.setCallback(callback);
-}
+HTTPClient http;
+WiFiClient wifiClient;
+PubSubClient mqttClient(wifiClient);
 
 /* Our JSON Example:
 
@@ -67,7 +47,6 @@ String downloadJSON(String jsonURL)
 {
     String output = "";
 
-    HTTPClient http;
     http.begin(jsonURL);
 
     Serial.println("HTTP GET...");
@@ -110,7 +89,7 @@ bool updateAvailable(String json, String &updateLink)
         {
             updateLink = item["link"].as<String>();
 
-            Serial.printf("Update found - current version %f, new version %f", currentVersion, newVersion);
+            Serial.printf("Update found - current version %f, new version %f \n", currentVersion, newVersion);
 
             return true;
         }
@@ -136,8 +115,6 @@ void updateFirmware(uint8_t *data, size_t len, int &currentLength, int &totalLen
 
 void startOTA(String firmwareUrl)
 {
-    HTTPClient http;
-
     http.begin(firmwareUrl);
 
     int httpCode = http.GET();
@@ -185,7 +162,7 @@ void mqttReconnect()
     while (!mqttClient.connected())
     {
         Serial.println("Attempting MQTT connection...");
-        if (mqttClient.connect(clientName))
+        if (mqttClient.connect("randomEsp"))
         {
             Serial.println("MQTT connected");
             mqttClient.subscribe(mqttTopic);
@@ -220,15 +197,40 @@ void callback(char *topic, byte *payload, unsigned int length)
     String _message = String((char *)payload);
     String _topic = String(topic);
 
+    Serial.println("Callbacc:");
+    Serial.println(_topic);
+    Serial.println(_message);
+
     if (_topic.equals(mqttTopic) == 1)
         update(_message);
+}
+
+void setup()
+{
+    Serial.begin(115200);
+
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(labSSID, labPass);
+    Serial.println("Connecting");
+
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        Serial.print(".");
+        delay(500);
+
+        timeoutCounter++;
+        if (timeoutCounter >= 20)
+            ESP.restart();
+    }
+
+    mqttClient.setServer(mqttBroker, mqttPort);
+    mqttClient.setCallback(callback);
 }
 
 void loop()
 {
     if (!mqttClient.connected())
-    {
         mqttReconnect();
-    }
+    
     mqttClient.loop();
 }
