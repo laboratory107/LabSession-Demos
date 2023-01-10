@@ -1,0 +1,1 @@
+The PlatfromIO TFLite Micro library isn't updated to the latest version of TFLite Micro, so this project contains the manually updated library.
