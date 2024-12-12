@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
 void setup() {
-  pinMode(3, OUTPUT);
+  pinMode(1, OUTPUT);
 }
 
 void loop() {
-  digitalWrite(3, LOW);
+  digitalWrite(1, LOW);
 }
